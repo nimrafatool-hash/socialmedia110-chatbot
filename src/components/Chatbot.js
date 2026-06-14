@@ -3,74 +3,191 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './Chatbot.module.css';
 
+// Generate a unique visitor ID for this browser session
+const getVisitorId = () => {
+  if (typeof window === 'undefined') return null;
+  let id = localStorage.getItem('visitor_id');
+  if (!id) {
+    id = 'visitor_' + Math.random().toString(36).slice(2, 11) + '_' + Date.now();
+    localStorage.setItem('visitor_id', id);
+  }
+  return id;
+};
+
+// Calendly URL - replace with actual client Calendly link
+const CALENDLY_URL = 'https://calendly.com/socialmedia110';
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'model', parts: [{ text: "Hi there! 👋 Welcome to SocialMedia110. How can I help you today?" }] }
+    { role: 'model', parts: [{ text: "Hi there! 👋 Welcome to SocialMedia110. I'm your AI assistant. How can I help you today?" }] }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [leadCaptured, setLeadCaptured] = useState(false);
+  const [leadStep, setLeadStep] = useState(null);
+  const [leadData, setLeadData] = useState({ name: '', email: '' });
+  const [sessionId, setSessionId] = useState(null);
+  const [isHumanTakeover, setIsHumanTakeover] = useState(false);
+  const [showCalendly, setShowCalendly] = useState(false);
   const messagesEndRef = useRef(null);
-
-  const toggleChat = () => setIsOpen(!isOpen);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const messageCount = useRef(0);
+  const pollRef = useRef(null);
 
   useEffect(() => {
-    scrollToBottom();
+    if (isOpen && !sessionId) {
+      initSession();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async (text) => {
-    if (!text.trim()) return;
+  // Poll for admin messages when human takeover is active
+  useEffect(() => {
+    if (!sessionId) return;
 
-    const userMsg = { role: 'user', parts: [{ text: text }] };
-    setMessages((prev) => [...prev, userMsg]);
+    pollRef.current = setInterval(async () => {
+      const res = await fetch(`/api/poll-messages?session_id=${sessionId}&last_count=${messages.length}`);
+      const data = await res.json();
+      if (data.new_messages?.length > 0) {
+        data.new_messages.forEach(msg => {
+          if (msg.role === 'admin') {
+            setMessages(prev => [...prev, { role: 'model', parts: [{ text: `👨 (Agent): ${msg.content}` }] }]);
+          }
+        });
+      }
+      if (data.is_human_takeover !== undefined) {
+        setIsHumanTakeover(data.is_human_takeover);
+      }
+    }, 3000);
+
+    return () => clearInterval(pollRef.current);
+  }, [sessionId, messages.length]);
+
+  const initSession = async () => {
+    const visitor_id = getVisitorId();
+    if (!visitor_id) return;
+    const res = await fetch('/api/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitor_id })
+    });
+    const data = await res.json();
+    if (data.session) {
+      setSessionId(data.session.id);
+      setIsHumanTakeover(data.session.is_human_takeover);
+    }
+  };
+
+  const checkLeadTrigger = (count) => {
+    if (count >= 3 && !leadCaptured && leadStep === null) {
+      setTimeout(() => {
+        setMessages(prev => [...prev, {
+          role: 'model',
+          parts: [{ text: "😊 You seem interested! May I get your name so I can assist you better?" }]
+        }]);
+        setLeadStep('name');
+      }, 800);
+    }
+  };
+
+  const saveLead = async (name, email) => {
+    await fetch('/api/save-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, chatbot_source: 'SocialMedia110' })
+    });
+    setLeadCaptured(true);
+    setLeadStep(null);
+    setMessages(prev => [...prev, {
+      role: 'model',
+      parts: [{ text: `Thanks ${name}! 🎉 Our team will reach out to ${email} soon. Is there anything else I can help with?` }]
+    }]);
+  };
+
+  const handleSend = async (text) => {
+    const msg = text || input;
+    if (!msg.trim()) return;
     setInput('');
+
+    const userMsg = { role: 'user', parts: [{ text: msg }] };
+    setMessages(prev => [...prev, userMsg]);
+
+    // Lead capture flow
+    if (leadStep === 'name') {
+      setLeadData(prev => ({ ...prev, name: msg }));
+      setLeadStep('email');
+      setMessages(prev => [...prev, { role: 'model', parts: [{ text: `Nice to meet you, ${msg}! 👋 What's the best email to reach you?` }] }]);
+      return;
+    }
+
+    if (leadStep === 'email') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(msg)) {
+        setMessages(prev => [...prev, { role: 'model', parts: [{ text: "That doesn't look like a valid email. Please try again (e.g. name@example.com):" }] }]);
+        return;
+      }
+      await saveLead(leadData.name, msg);
+      return;
+    }
+
+    // If human has taken over, just show waiting message
+    if (isHumanTakeover) {
+      await fetch('/api/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, role: 'user', content: msg })
+      });
+      return;
+    }
+
+    // Normal AI chat
     setIsLoading(true);
+    messageCount.current += 1;
 
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({ messages: [...messages, userMsg], session_id: sessionId }),
       });
 
       const data = await response.json();
-      if (data.reply) {
-        setMessages((prev) => [...prev, { role: 'model', parts: [{ text: data.reply }] }]);
-      } else {
-        setMessages((prev) => [...prev, { role: 'model', parts: [{ text: "Sorry, I'm having trouble connecting right now." }] }]);
+      if (data.human_takeover) {
+        setIsHumanTakeover(true);
+        setMessages(prev => [...prev, { role: 'model', parts: [{ text: "🔄 You've been connected to a live agent. Please wait for their response..." }] }]);
+      } else if (data.reply) {
+        setMessages(prev => [...prev, { role: 'model', parts: [{ text: data.reply }] }]);
       }
-    } catch (error) {
-      setMessages((prev) => [...prev, { role: 'model', parts: [{ text: "Sorry, something went wrong." }] }]);
+    } catch {
+      setMessages(prev => [...prev, { role: 'model', parts: [{ text: "Sorry, something went wrong." }] }]);
     } finally {
       setIsLoading(false);
+      checkLeadTrigger(messageCount.current);
     }
   };
 
-  const quickReplies = [
-    "What services do you offer?",
-    "Do you offer video editing?",
-    "How can I get a quote?"
-  ];
+  const quickReplies = ["What services do you offer?", "Do you offer video editing?", "Book a Free Call 📅"];
 
   return (
     <div className={styles.chatbotContainer}>
       {isOpen ? (
-        <div className={styles.chatWindow}>
+        <div className={styles.chatWindow} style={{ position: 'relative' }}>
           <div className={styles.header}>
             <div className={styles.headerInfo}>
               <div className={styles.avatar}>SM</div>
               <div>
                 <div className={styles.title}>SocialMedia110 Bot</div>
-                <div className={styles.status}>Online</div>
+                <div className={styles.status}>
+                  {isHumanTakeover ? '🟡 Live Agent Connected' : '🟢 AI Online'}
+                </div>
               </div>
             </div>
-            <button className={styles.closeBtn} onClick={toggleChat}>✕</button>
+            <button className={styles.closeBtn} onClick={() => setIsOpen(false)}>✕</button>
           </div>
-          
+
           <div className={styles.messagesArea}>
             {messages.map((msg, idx) => (
               <div key={idx} className={`${styles.message} ${msg.role === 'user' ? styles.userMsg : styles.modelMsg}`}>
@@ -85,36 +202,65 @@ export default function Chatbot() {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Calendly Booking Popup */}
+          {showCalendly && (
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#fff', zIndex: 10, display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 16px', backgroundColor: '#12213B', color: 'white' }}>
+                <span style={{ fontWeight: '700', fontSize: '15px' }}>📅 Book a Free Call</span>
+                <button onClick={() => setShowCalendly(false)} style={{ background: 'none', border: 'none', color: 'white', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+              </div>
+              <iframe
+                src={`${CALENDLY_URL}?embed_type=Inline&hide_gdpr_banner=1`}
+                style={{ flex: 1, border: 'none', width: '100%' }}
+                title="Book a Call"
+              />
+            </div>
+          )}
+
           {messages.length === 1 && (
             <div className={styles.quickReplies}>
               {quickReplies.map((reply, idx) => (
-                <button key={idx} onClick={() => handleSend(reply)} className={styles.qrBtn}>
-                  {reply}
-                </button>
+                <button key={idx} onClick={() => {
+                  if (reply === 'Book a Free Call 📅') {
+                    setShowCalendly(true);
+                    setMessages(prev => [...prev, 
+                      { role: 'user', parts: [{ text: reply }] },
+                      { role: 'model', parts: [{ text: "Great! Opening the booking calendar for you right now. Pick a time that works best for you! 📅" }] }
+                    ]);
+                  } else {
+                    handleSend(reply);
+                  }
+                }} className={styles.qrBtn}>{reply}</button>
               ))}
             </div>
           )}
 
+          {/* Book a Call Button (always visible) */}
+          {!showCalendly && messages.length > 1 && (
+            <div style={{ padding: '6px 12px', borderTop: '1px solid #F3F4F6' }}>
+              <button
+                onClick={() => setShowCalendly(true)}
+                style={{ width: '100%', padding: '9px', backgroundColor: '#FF7B2C', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '13px' }}
+              >
+                📅 Book a Free Discovery Call
+              </button>
+            </div>
+          )}
+
           <div className={styles.inputArea}>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSend(input);
-                }
-              }}
-              placeholder="Type your message..."
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSend(); }}
+              placeholder={leadStep === 'name' ? "Enter your name..." : leadStep === 'email' ? "Enter your email..." : isHumanTakeover ? "Message live agent..." : "Type your message..."}
               className={styles.input}
             />
-            <button onClick={() => handleSend(input)} className={styles.sendBtn}>
-              Send
-            </button>
+            <button onClick={() => handleSend()} className={styles.sendBtn}>Send</button>
           </div>
         </div>
       ) : (
-        <button className={styles.floatingBtn} onClick={toggleChat}>
+        <button className={styles.floatingBtn} onClick={() => setIsOpen(true)}>
           💬 Chat with us
         </button>
       )}
