@@ -63,6 +63,68 @@ export default function Home() {
             <p style={{ color: '#6B7280', lineHeight: '1.5' }}>Monitor conversations in real-time and take over the chat manually whenever a high-ticket client arrives.</p>
           </div>
         </div>
+
+        {/* Pricing Section */}
+        <div style={{ marginTop: '120px', marginBottom: '80px' }}>
+          <h2 style={{ fontSize: '48px', fontWeight: '900', color: '#111827', marginBottom: '16px', letterSpacing: '-1px' }}>Simple, Transparent Pricing</h2>
+          <p style={{ fontSize: '20px', color: '#6B7280', marginBottom: '48px' }}>Choose the plan that fits your business. Save more with longer commitments!</p>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', textAlign: 'left' }}>
+            
+            {/* Monthly */}
+            <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '16px', border: '1px solid #E5E7EB', position: 'relative' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>Monthly</h3>
+              <div style={{ fontSize: '40px', fontWeight: '900', color: '#111827', marginBottom: '16px' }}>$25<span style={{ fontSize: '16px', fontWeight: '500', color: '#6B7280' }}>/mo</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', color: '#4B5563', lineHeight: '2' }}>
+                <li>✅ 1 Custom AI Chatbot</li>
+                <li>✅ Unlimited Knowledge Base</li>
+                <li>✅ Unlimited Leads</li>
+                <li>✅ Live Chat Takeover</li>
+              </ul>
+              <Link href="/login" style={{ display: 'block', textAlign: 'center', backgroundColor: '#F3F4F6', color: '#111827', padding: '12px', borderRadius: '8px', fontWeight: '700', textDecoration: 'none' }}>Get Started</Link>
+            </div>
+
+            {/* 3 Months */}
+            <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '16px', border: '2px solid #4F46E5', position: 'relative', boxShadow: '0 10px 25px rgba(79, 70, 229, 0.1)' }}>
+              <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#4F46E5', color: 'white', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '700' }}>10% OFF</div>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>3 Months</h3>
+              <div style={{ fontSize: '40px', fontWeight: '900', color: '#111827', marginBottom: '16px' }}>$67.5<span style={{ fontSize: '16px', fontWeight: '500', color: '#6B7280' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', color: '#4B5563', lineHeight: '2' }}>
+                <li>✅ Everything in Monthly</li>
+                <li>✅ Billed every 3 months</li>
+                <li>✅ $22.50 per month</li>
+              </ul>
+              <Link href="/login" style={{ display: 'block', textAlign: 'center', backgroundColor: '#4F46E5', color: 'white', padding: '12px', borderRadius: '8px', fontWeight: '700', textDecoration: 'none' }}>Get Started</Link>
+            </div>
+
+            {/* 6 Months */}
+            <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '16px', border: '1px solid #E5E7EB', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#10B981', color: 'white', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '700' }}>15% OFF</div>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>6 Months</h3>
+              <div style={{ fontSize: '40px', fontWeight: '900', color: '#111827', marginBottom: '16px' }}>$127.5<span style={{ fontSize: '16px', fontWeight: '500', color: '#6B7280' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', color: '#4B5563', lineHeight: '2' }}>
+                <li>✅ Everything in Monthly</li>
+                <li>✅ Billed every 6 months</li>
+                <li>✅ $21.25 per month</li>
+              </ul>
+              <Link href="/login" style={{ display: 'block', textAlign: 'center', backgroundColor: '#F3F4F6', color: '#111827', padding: '12px', borderRadius: '8px', fontWeight: '700', textDecoration: 'none' }}>Get Started</Link>
+            </div>
+
+            {/* 12 Months */}
+            <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '16px', border: '1px solid #E5E7EB', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', backgroundColor: '#F59E0B', color: 'white', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '700' }}>25% OFF</div>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#374151', marginBottom: '8px' }}>12 Months</h3>
+              <div style={{ fontSize: '40px', fontWeight: '900', color: '#111827', marginBottom: '16px' }}>$225<span style={{ fontSize: '16px', fontWeight: '500', color: '#6B7280' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', color: '#4B5563', lineHeight: '2' }}>
+                <li>✅ Everything in Monthly</li>
+                <li>✅ Billed yearly</li>
+                <li>✅ $18.75 per month</li>
+              </ul>
+              <Link href="/login" style={{ display: 'block', textAlign: 'center', backgroundColor: '#F3F4F6', color: '#111827', padding: '12px', borderRadius: '8px', fontWeight: '700', textDecoration: 'none' }}>Get Started</Link>
+            </div>
+
+          </div>
+        </div>
       </main>
 
       {/* The Chatbot */}

@@ -115,6 +115,12 @@ Key selling points of BotSaaS:
 - Live human takeover (monitor and jump into chats).
 - Built-in Calendar Booking.
 
+Pricing:
+- Monthly: $25/month
+- 3 Months: $67.50 total (10% off, $22.50/month)
+- 6 Months: $127.50 total (15% off, $21.25/month)
+- 12 Months: $225 total (25% off, $18.75/month)
+
 Keep your responses highly enthusiastic, professional, and concise. Convince them to sign up!`;
     }
 

@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [stats, setStats] = useState({ leads: 0, knowledge: 0, chats: 0 });
   const [loading, setLoading] = useState(true);
   const [hasBot, setHasBot] = useState(false);
+  const [recentLeads, setRecentLeads] = useState([]);
 
   useEffect(() => {
     fetchStats();
@@ -31,10 +32,11 @@ export default function Dashboard() {
     const botIds = bots.map(b => b.id);
 
     // Fetch stats ONLY for their bots
-    const [leadsRes, kbRes, chatsRes] = await Promise.all([
+    const [leadsRes, kbRes, chatsRes, recentRes] = await Promise.all([
       supabase.from('leads').select('id', { count: 'exact' }).in('bot_id', botIds),
       supabase.from('knowledge_base').select('id', { count: 'exact' }).in('bot_id', botIds),
-      supabase.from('chat_sessions').select('id', { count: 'exact' }).in('bot_id', botIds)
+      supabase.from('chat_sessions').select('id', { count: 'exact' }).in('bot_id', botIds),
+      supabase.from('leads').select('*').in('bot_id', botIds).order('created_at', { ascending: false }).limit(5)
     ]);
 
     setStats({
@@ -42,7 +44,21 @@ export default function Dashboard() {
       knowledge: kbRes.count || 0,
       chats: chatsRes.count || 0
     });
+    setRecentLeads(recentRes.data || []);
     setLoading(false);
+  };
+
+  const deleteLead = async (id) => {
+    await supabase.from('leads').delete().eq('id', id);
+    fetchStats();
+  };
+
+  const timeAgo = (dateStr) => {
+    const diff = Math.floor((new Date() - new Date(dateStr)) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return new Date(dateStr).toLocaleDateString();
   };
 
   return (
@@ -83,35 +99,41 @@ export default function Dashboard() {
       <div style={{ marginTop: '40px', backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#111827' }}>Recent CRM Leads</h2>
-          <button style={{ backgroundColor: '#F3F4F6', color: '#374151', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}>View All</button>
+          <Link href="/dashboard/leads" style={{ backgroundColor: '#F3F4F6', color: '#374151', textDecoration: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: '600' }}>View All</Link>
         </div>
-        <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px' }}>
-              <th style={{ padding: '16px 0', fontWeight: '600' }}>Name</th>
-              <th style={{ fontWeight: '600' }}>Email / Contact</th>
-              <th style={{ fontWeight: '600' }}>Chatbot Source</th>
-              <th style={{ fontWeight: '600' }}>Status</th>
-              <th style={{ fontWeight: '600' }}>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style={{ borderBottom: '1px solid #F3F4F6', fontSize: '15px' }}>
-              <td style={{ padding: '16px 0', fontWeight: '600', color: '#111827' }}>Ali Khan</td>
-              <td style={{ color: '#4F46E5', fontWeight: '500' }}>ali.khan@example.com</td>
-              <td><span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '600' }}>SocialMedia110</span></td>
-              <td><span style={{ backgroundColor: '#D1FAE5', color: '#065F46', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '600' }}>New Lead</span></td>
-              <td style={{ color: '#6B7280' }}>Just now</td>
-            </tr>
-            <tr style={{ borderBottom: '1px solid #F3F4F6', fontSize: '15px' }}>
-              <td style={{ padding: '16px 0', fontWeight: '600', color: '#111827' }}>Sara Ahmed</td>
-              <td style={{ color: '#4F46E5', fontWeight: '500' }}>sara123@gmail.com</td>
-              <td><span style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '600' }}>TechStore Bot</span></td>
-              <td><span style={{ backgroundColor: '#FEF3C7', color: '#92400E', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '600' }}>Contacted</span></td>
-              <td style={{ color: '#6B7280' }}>2 hrs ago</td>
-            </tr>
-          </tbody>
-        </table>
+        
+        {recentLeads.length === 0 ? (
+          <p style={{ color: '#6B7280', textAlign: 'center', padding: '20px 0' }}>No leads captured yet.</p>
+        ) : (
+          <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #E5E7EB', color: '#6B7280', fontSize: '14px' }}>
+                <th style={{ padding: '16px 0', fontWeight: '600' }}>Name</th>
+                <th style={{ fontWeight: '600' }}>Email / Contact</th>
+                <th style={{ fontWeight: '600' }}>Status</th>
+                <th style={{ fontWeight: '600' }}>Date</th>
+                <th style={{ fontWeight: '600', textAlign: 'right' }}>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentLeads.map((lead) => (
+                <tr key={lead.id} style={{ borderBottom: '1px solid #F3F4F6', fontSize: '15px' }}>
+                  <td style={{ padding: '16px 0', fontWeight: '600', color: '#111827' }}>{lead.name || '—'}</td>
+                  <td style={{ color: '#4F46E5', fontWeight: '500' }}>{lead.email}</td>
+                  <td>
+                    <span style={{ backgroundColor: lead.status === 'New Lead' ? '#D1FAE5' : '#FEF3C7', color: lead.status === 'New Lead' ? '#065F46' : '#92400E', padding: '4px 12px', borderRadius: '50px', fontSize: '12px', fontWeight: '600' }}>
+                      {lead.status || 'New Lead'}
+                    </span>
+                  </td>
+                  <td style={{ color: '#6B7280' }}>{timeAgo(lead.created_at)}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <button onClick={() => deleteLead(lead.id)} style={{ backgroundColor: '#FEE2E2', color: '#DC2626', border: 'none', padding: '6px 12px', borderRadius: '6px', fontWeight: '600', cursor: 'pointer', fontSize: '12px' }}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
