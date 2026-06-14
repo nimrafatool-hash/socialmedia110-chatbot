@@ -1,25 +1,81 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
+
 export default function Dashboard() {
+  const [stats, setStats] = useState({ leads: 0, knowledge: 0, chats: 0 });
+  const [loading, setLoading] = useState(true);
+  const [hasBot, setHasBot] = useState(false);
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  const fetchStats = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    
+    const userId = session.user.id;
+
+    // First check if user has any bots
+    const { data: bots } = await supabase.from('bots').select('id').eq('user_id', userId);
+    
+    if (!bots || bots.length === 0) {
+      setHasBot(false);
+      setLoading(false);
+      return; // Leave stats at 0
+    }
+
+    setHasBot(true);
+    const botIds = bots.map(b => b.id);
+
+    // Fetch stats ONLY for their bots
+    const [leadsRes, kbRes, chatsRes] = await Promise.all([
+      supabase.from('leads').select('id', { count: 'exact' }).in('bot_id', botIds),
+      supabase.from('knowledge_base').select('id', { count: 'exact' }).in('bot_id', botIds),
+      supabase.from('chat_sessions').select('id', { count: 'exact' }).in('bot_id', botIds)
+    ]);
+
+    setStats({
+      leads: leadsRes.count || 0,
+      knowledge: kbRes.count || 0,
+      chats: chatsRes.count || 0
+    });
+    setLoading(false);
+  };
+
   return (
     <div>
       <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>Welcome back, Admin 👋</h1>
-      <p style={{ color: '#6B7280', marginBottom: '32px' }}>Here is what is happening with your chatbots today.</p>
+      <p style={{ color: '#6B7280', marginBottom: '32px' }}>Here is what is happening with your AI Chatbots today.</p>
+
+      {!hasBot && !loading && (
+        <div style={{ backgroundColor: '#EEF2FF', padding: '24px', borderRadius: '16px', marginBottom: '32px', border: '1px solid #C7D2FE' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', color: '#4F46E5', marginBottom: '8px' }}>🚀 Welcome to your new SaaS!</h2>
+          <p style={{ color: '#4338CA', marginBottom: '16px' }}>You don't have any chatbots yet. Create your first chatbot to start capturing leads.</p>
+          <Link href="/dashboard/chatbots" style={{ backgroundColor: '#4F46E5', color: 'white', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none', fontWeight: '600', display: 'inline-block' }}>
+            Create Chatbot
+          </Link>
+        </div>
+      )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
-        {/* Metric Cards */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#6B7280', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>Total Conversations</h3>
-          <p style={{ fontSize: '36px', fontWeight: 'bold', marginTop: '8px', color: '#111827' }}>142</p>
-          <p style={{ fontSize: '12px', color: '#10B981', marginTop: '8px', fontWeight: '600' }}>↑ 12% from last week</p>
+        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>Total Leads Captured</div>
+          <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#111827', marginTop: '8px' }}>{loading ? '...' : stats.leads}</div>
+          <div style={{ fontSize: '14px', color: '#10B981', marginTop: '8px', fontWeight: '500' }}>Active in CRM</div>
         </div>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#6B7280', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>Leads Captured</h3>
-          <p style={{ fontSize: '36px', fontWeight: 'bold', marginTop: '8px', color: '#111827' }}>28</p>
-          <p style={{ fontSize: '12px', color: '#10B981', marginTop: '8px', fontWeight: '600' }}>↑ 4 new today</p>
+
+        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>AI Knowledge Items</div>
+          <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#111827', marginTop: '8px' }}>{loading ? '...' : stats.knowledge}</div>
+          <div style={{ fontSize: '14px', color: '#4F46E5', marginTop: '8px', fontWeight: '500' }}>Training your bot</div>
         </div>
-        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ color: '#6B7280', fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>Active Chatbots</h3>
-          <p style={{ fontSize: '36px', fontWeight: 'bold', marginTop: '8px', color: '#111827' }}>3</p>
-          <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '8px' }}>Running flawlessly</p>
+
+        <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '14px', fontWeight: '600', color: '#6B7280', textTransform: 'uppercase' }}>Total Chat Sessions</div>
+          <div style={{ fontSize: '36px', fontWeight: 'bold', color: '#111827', marginTop: '8px' }}>{loading ? '...' : stats.chats}</div>
+          <div style={{ fontSize: '14px', color: '#F59E0B', marginTop: '8px', fontWeight: '500' }}>Conversations started</div>
         </div>
       </div>
       

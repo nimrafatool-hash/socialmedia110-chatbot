@@ -1,12 +1,40 @@
+'use client';
+import { Inter } from 'next/font/google';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
-export const metadata = {
-  title: 'Admin Dashboard | AI Chatbot SaaS',
-};
+const inter = Inter({ subsets: ['latin'] });
 
 export default function DashboardLayout({ children }) {
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      router.push('/login');
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/login');
+  };
+
+  if (loading) {
+    return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Dashboard...</div>;
+  }
+
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F9FAFB', color: '#111827', fontFamily: 'sans-serif' }}>
+    <div className={inter.className} style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F9FAFB', color: '#111827' }}>
       {/* Sidebar */}
       <aside style={{ width: '250px', backgroundColor: '#FFFFFF', borderRight: '1px solid #E5E7EB', padding: '24px', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '40px' }}>
@@ -21,8 +49,16 @@ export default function DashboardLayout({ children }) {
           <Link href="/dashboard/livechat" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>💬 Live Chat</Link>
           <Link href="/dashboard/knowledge" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>📚 AI Knowledge</Link>
           <Link href="/dashboard/analytics" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>📈 Analytics</Link>
-          <Link href="/dashboard/settings" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>⚙️ Settings</Link>
+          <Link href="/dashboard/settings" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>⚙️ Settings/Billing</Link>
         </nav>
+
+        <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid #E5E7EB' }}>
+          <button 
+            onClick={handleSignOut}
+            style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', fontWeight: '600', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', padding: '8px 0' }}>
+            🚪 Sign Out
+          </button>
+        </div>
 
         <div style={{ marginTop: 'auto', borderTop: '1px solid #E5E7EB', paddingTop: '20px' }}>
           <div style={{ fontSize: '14px', fontWeight: '600' }}>Admin User</div>
