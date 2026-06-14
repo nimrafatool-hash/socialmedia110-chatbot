@@ -31,7 +31,8 @@ export default function Login() {
       if (!isLogin && result.data?.user) {
         await supabase.from('users_subscription').insert({
           user_id: result.data.user.id,
-          status: 'Inactive' // They must pay to activate
+          status: 'Inactive', // They must pay to activate
+          email: email
         });
       }
       router.push('/dashboard');

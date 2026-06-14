@@ -3,26 +3,34 @@ import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function DashboardLayout({ children }) {
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState('Inactive');
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    checkUser();
-  }, []);
-
-  const checkUser = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      router.push('/login');
-    } else {
-      setLoading(false);
-    }
-  };
+    const checkAuthAndSub = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.push('/login');
+      } else {
+        const { data: sub } = await supabase
+          .from('users_subscription')
+          .select('status')
+          .eq('user_id', session.user.id)
+          .single();
+        if (sub) setSubscriptionStatus(sub.status);
+        setLoading(false);
+      }
+    };
+    checkAuthAndSub();
+  }, [router]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -42,15 +50,29 @@ export default function DashboardLayout({ children }) {
           <h2 style={{ fontSize: '20px', fontWeight: '800', color: '#111827', margin: 0 }}>SaaS Admin</h2>
         </div>
         
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '20px', flex: 1 }}>
-          <Link href="/dashboard" style={{ fontWeight: '600', color: '#4F46E5', display: 'flex', alignItems: 'center', gap: '12px' }}>📊 Overview</Link>
-          <Link href="/dashboard/chatbots" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>🤖 My Chatbots</Link>
-          <Link href="/dashboard/leads" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>🎯 Leads CRM</Link>
-          <Link href="/dashboard/livechat" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>💬 Live Chat</Link>
-          <Link href="/dashboard/knowledge" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>📚 AI Knowledge</Link>
-          <Link href="/dashboard/analytics" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>📈 Analytics</Link>
-          <Link href="/dashboard/settings" style={{ fontWeight: '600', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '12px' }}>⚙️ Settings/Billing</Link>
-        </nav>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Link href="/dashboard" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname === '/dashboard' ? 'white' : '#9CA3AF', backgroundColor: pathname === '/dashboard' ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>📊</span> Overview
+          </Link>
+          <Link href="/dashboard/chatbots" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname.includes('/dashboard/chatbots') ? 'white' : '#9CA3AF', backgroundColor: pathname.includes('/dashboard/chatbots') ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>🤖</span> My Chatbots
+          </Link>
+          <Link href="/dashboard/knowledge" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname.includes('/dashboard/knowledge') ? 'white' : '#9CA3AF', backgroundColor: pathname.includes('/dashboard/knowledge') ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>🧠</span> AI Knowledge Base
+          </Link>
+          <Link href="/dashboard/leads" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname.includes('/dashboard/leads') ? 'white' : '#9CA3AF', backgroundColor: pathname.includes('/dashboard/leads') ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>🎯</span> CRM Leads
+          </Link>
+          <Link href="/dashboard/livechat" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname.includes('/dashboard/livechat') ? 'white' : '#9CA3AF', backgroundColor: pathname.includes('/dashboard/livechat') ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>💬</span> Live Chat
+          </Link>
+          
+          <div style={{ margin: '16px 0', borderTop: '1px solid #E5E7EB' }}></div>
+          
+          <Link href="/dashboard/billing" onClick={() => setIsSidebarOpen(false)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', color: pathname.includes('/dashboard/billing') ? 'white' : '#9CA3AF', backgroundColor: pathname.includes('/dashboard/billing') ? '#4F46E5' : 'transparent', textDecoration: 'none', transition: 'all 0.2s', fontWeight: '500' }}>
+            <span style={{ fontSize: '18px' }}>💳</span> Billing & Plans
+          </Link>
+        </div>
 
         <div style={{ marginTop: 'auto', paddingTop: '20px', borderTop: '1px solid #E5E7EB' }}>
           <button 
@@ -60,7 +82,7 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        <div style={{ marginTop: 'auto', borderTop: '1px solid #E5E7EB', paddingTop: '20px' }}>
+        <div style={{ marginTop: '20px', borderTop: '1px solid #E5E7EB', paddingTop: '20px' }}>
           <div style={{ fontSize: '14px', fontWeight: '600' }}>Admin User</div>
           <div style={{ fontSize: '12px', color: '#6B7280' }}>Connected to Supabase ✅</div>
         </div>
