@@ -15,7 +15,7 @@ const getVisitorId = () => {
 };
 
 // Calendly URL - replace with actual client Calendly link
-const CALENDLY_URL = 'https://calendly.com/socialmedia110';
+const CALENDLY_URL = 'https://calendly.com/dariaodum1/30min';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
