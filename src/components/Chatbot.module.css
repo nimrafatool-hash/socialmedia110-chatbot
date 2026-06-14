@@ -7,7 +7,7 @@
 }
 
 .floatingBtn {
-  background-color: #FF7B2C;
+  background-color: var(--primary, #4F46E5);
   color: white;
   border: none;
   padding: 16px 24px;
@@ -43,7 +43,7 @@
 }
 
 .header {
-  background-color: #12213B;
+  background-color: var(--primary, #4F46E5);
   color: white;
   padding: 16px 20px;
   display: flex;
@@ -58,7 +58,8 @@
 }
 
 .avatar {
-  background-color: #FF7B2C;
+  background-color: white;
+  color: var(--primary, #4F46E5);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -120,7 +121,7 @@
 }
 
 .userMsg {
-  background-color: #FF7B2C;
+  background-color: var(--primary, #4F46E5);
   color: white;
   align-self: flex-end;
   border-bottom-right-radius: 4px;
@@ -135,8 +136,8 @@
 
 .qrBtn {
   background-color: white;
-  border: 1px solid #FF7B2C;
-  color: #FF7B2C;
+  border: 1px solid var(--primary, #4F46E5);
+  color: var(--primary, #4F46E5);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -146,7 +147,7 @@
 }
 
 .qrBtn:hover {
-  background-color: #FF7B2C;
+  background-color: var(--primary, #4F46E5);
   color: white;
 }
 
@@ -169,11 +170,11 @@
 }
 
 .input:focus {
-  border-color: #FF7B2C;
+  border-color: var(--primary, #4F46E5);
 }
 
 .sendBtn {
-  background-color: #12213B;
+  background-color: var(--primary, #4F46E5);
   color: white;
   border: none;
   padding: 0 16px;

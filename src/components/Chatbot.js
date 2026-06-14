@@ -23,13 +23,22 @@ export default function Chatbot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [leadCaptured, setLeadCaptured] = useState(false);
-  const [leadStep, setLeadStep] = useState(null);
+  const [leadStep, setLeadStep] = useState(null); // 'name' | 'email'
   const [leadData, setLeadData] = useState({ name: '', email: '' });
-  const [sessionId, setSessionId] = useState(null);
+  const [sessionId, setSessionId] = useState('');
   const [isHumanTakeover, setIsHumanTakeover] = useState(false);
   const [showCalendly, setShowCalendly] = useState(false);
+  
   const messagesEndRef = useRef(null);
   const messageCount = useRef(0);
+
+  const botConfig = typeof window !== 'undefined' && window.CHATBOT_CONFIG ? window.CHATBOT_CONFIG : {
+    botId: null,
+    botName: 'BotSaaS AI',
+    botAvatar: 'AI',
+    primaryColor: '#4F46E5',
+    welcomeMessage: '👋 Are you interested in growing your business with an AI Chatbot?'
+  };
   const pollRef = useRef(null);
 
   useEffect(() => {
@@ -40,12 +49,10 @@ export default function Chatbot() {
 
   useEffect(() => {
     // Determine configuration on load
-    const isClientSite = typeof window !== 'undefined' && window.CHATBOT_CONFIG;
+    const isClientSite = !!botConfig.botId;
     
     // Set Welcome Message
-    const defaultWelcome = isClientSite 
-      ? (window.CHATBOT_CONFIG.welcomeMessage || "Hi! How can I help you?")
-      : "👋 Are you interested in growing your business with an AI Chatbot?";
+    const defaultWelcome = botConfig.welcomeMessage;
       
     if (messages.length === 0) {
       setMessages([{ role: 'model', parts: [{ text: defaultWelcome }] }]);
@@ -166,7 +173,7 @@ export default function Chatbot() {
     messageCount.current += 1;
 
     try {
-      const botId = typeof window !== 'undefined' && window.CHATBOT_CONFIG ? window.CHATBOT_CONFIG.botId : null;
+      const botId = botConfig.botId;
 
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -189,17 +196,19 @@ export default function Chatbot() {
     }
   };
 
-  const quickReplies = ["What services do you offer?", "Do you offer video editing?", "Book a Free Call 📅"];
+  const quickReplies = botConfig.botId 
+    ? ["What services do you offer?", "Can I see your pricing?", "Book a Free Call 📅"]
+    : ["How do I create a chatbot?", "What is the pricing?", "Does it capture leads?"];
 
   return (
-    <div className={styles.chatbotContainer}>
+    <div className={styles.chatbotContainer} style={{ '--primary': botConfig.primaryColor }}>
       {isOpen ? (
         <div className={styles.chatWindow} style={{ position: 'relative' }}>
           <div className={styles.header}>
             <div className={styles.headerInfo}>
-              <div className={styles.avatar}>SM</div>
+              <div className={styles.avatar}>{botConfig.botAvatar}</div>
               <div>
-                <div className={styles.title}>SocialMedia110 Bot</div>
+                <div className={styles.title}>{botConfig.botName}</div>
                 <div className={styles.status}>
                   {isHumanTakeover ? '🟡 Live Agent Connected' : '🟢 AI Online'}
                 </div>
