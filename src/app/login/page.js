@@ -57,11 +57,12 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <form onSubmit={handleAuth} autoComplete="off" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Email Address</label>
             <input
               type="email"
+              autoComplete="new-email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -73,6 +74,7 @@ export default function Login() {
             <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '6px' }}>Password</label>
             <input
               type="password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
