@@ -94,11 +94,29 @@ export async function POST(req) {
       : '';
 
     // DYNAMIC PROMPT based on the client's website
-    const systemInstruction = `You are a helpful, professional AI Sales Assistant for ${botName}, representing the website: ${websiteUrl}.
+    let systemInstruction = `You are a helpful AI Assistant for ${botName}, representing the website: ${websiteUrl}.
 Help visitors understand the services offered on this website, answer their questions, and qualify leads.
 If the user asks for a meeting or call, and this link is available: ${calendlyLink}, provide the link.
 Answer based strictly on the context of ${websiteUrl}. Do not invent pricing or services that are not mentioned in the knowledge base.
 Keep responses concise, friendly, and helpful.${knowledgeSection}`;
+
+    // If NO bot_id is provided, it means this is running on the main SaaS Landing Page!
+    if (!bot_id) {
+      systemInstruction = `You are the AI Sales Assistant for BotSaaS, a powerful AI Chatbot creation platform.
+Your goal is to convince website owners to use BotSaaS to grow their business.
+If they ask how to create a chatbot, explain this simple 3-step process:
+1. Click 'Start Building for Free' to sign up for an account.
+2. Go to 'My Chatbots' in the dashboard, click '+ Create New Bot', and enter your website URL.
+3. Copy the generated embed code and paste it into your website. It takes less than 2 minutes!
+
+Key selling points of BotSaaS:
+- Train the AI on your own business data (PDFs, FAQs).
+- Capture leads automatically.
+- Live human takeover (monitor and jump into chats).
+- Built-in Calendar Booking.
+
+Keep your responses highly enthusiastic, professional, and concise. Convince them to sign up!`;
+    }
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

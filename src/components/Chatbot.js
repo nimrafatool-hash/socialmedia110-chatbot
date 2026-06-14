@@ -19,9 +19,7 @@ const CALENDLY_URL = 'https://calendly.com/dariaodum1/30min';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'model', parts: [{ text: "Hi there! 👋 Welcome to SocialMedia110. I'm your AI assistant. How can I help you today?" }] }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [leadCaptured, setLeadCaptured] = useState(false);
@@ -41,7 +39,27 @@ export default function Chatbot() {
   }, [isOpen]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Determine configuration on load
+    const isClientSite = typeof window !== 'undefined' && window.CHATBOT_CONFIG;
+    
+    // Set Welcome Message
+    const defaultWelcome = isClientSite 
+      ? (window.CHATBOT_CONFIG.welcomeMessage || "Hi! How can I help you?")
+      : "👋 Are you interested in growing your business with an AI Chatbot?";
+      
+    if (messages.length === 0) {
+      setMessages([{ role: 'model', parts: [{ text: defaultWelcome }] }]);
+    }
+
+    // Auto-open on the SaaS Landing Page after 1.5 seconds
+    if (!isClientSite) {
+      const timer = setTimeout(() => setIsOpen(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   // Poll for admin messages when human takeover is active
