@@ -12,9 +12,9 @@ export default function Home() {
           <h1 style={{ fontSize: '24px', fontWeight: '900', color: '#111827', margin: 0, letterSpacing: '-0.5px' }}>BotSaaS</h1>
         </div>
         <nav style={{ display: 'flex', gap: '32px', fontWeight: '600', color: '#4B5563' }}>
-          <span style={{ cursor: 'pointer' }}>Features</span>
-          <span style={{ cursor: 'pointer' }}>Pricing</span>
-          <span style={{ cursor: 'pointer' }}>How it Works</span>
+          <Link href="#features" style={{ textDecoration: 'none', color: 'inherit' }}>Features</Link>
+          <Link href="#how-it-works" style={{ textDecoration: 'none', color: 'inherit' }}>How it Works</Link>
+          <Link href="#pricing" style={{ textDecoration: 'none', color: 'inherit' }}>Pricing</Link>
         </nav>
         <Link href="/login" style={{ backgroundColor: '#111827', color: 'white', padding: '10px 24px', borderRadius: '50px', fontWeight: '600', textDecoration: 'none' }}>
           Dashboard / Login
@@ -46,7 +46,7 @@ export default function Home() {
         </div>
 
         {/* Features Preview */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '100px', textAlign: 'left' }}>
+        <div id="features" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', marginTop: '100px', textAlign: 'left', paddingTop: '80px' }}>
           <div style={{ backgroundColor: '#FFFFFF', padding: '32px', borderRadius: '16px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <div style={{ fontSize: '40px', marginBottom: '16px' }}>⚡</div>
             <h3 style={{ fontSize: '20px', fontWeight: '800', marginBottom: '8px' }}>2-Minute Setup</h3>
@@ -64,8 +64,31 @@ export default function Home() {
           </div>
         </div>
 
+        {/* How It Works Section */}
+        <div id="how-it-works" style={{ marginTop: '120px', paddingTop: '80px', textAlign: 'center' }}>
+          <h2 style={{ fontSize: '48px', fontWeight: '900', color: '#111827', marginBottom: '16px', letterSpacing: '-1px' }}>How It Works</h2>
+          <p style={{ fontSize: '20px', color: '#6B7280', marginBottom: '48px' }}>Launch your AI agent in three simple steps.</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '32px', textAlign: 'left', maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ flex: 1, padding: '24px', backgroundColor: '#F9FAFB', borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#4F46E5', marginBottom: '12px' }}>Step 1</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>Create an Account</h4>
+              <p style={{ color: '#6B7280' }}>Sign up for free and enter your website URL in the dashboard.</p>
+            </div>
+            <div style={{ flex: 1, padding: '24px', backgroundColor: '#F9FAFB', borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#4F46E5', marginBottom: '12px' }}>Step 2</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>Train the AI</h4>
+              <p style={{ color: '#6B7280' }}>Add your pricing, FAQs, and business details to the AI Brain.</p>
+            </div>
+            <div style={{ flex: 1, padding: '24px', backgroundColor: '#F9FAFB', borderRadius: '16px', border: '1px solid #E5E7EB' }}>
+              <div style={{ fontSize: '24px', fontWeight: '800', color: '#4F46E5', marginBottom: '12px' }}>Step 3</div>
+              <h4 style={{ fontSize: '18px', fontWeight: '700', marginBottom: '8px' }}>Embed Code</h4>
+              <p style={{ color: '#6B7280' }}>Copy a single line of code into your website and go live instantly.</p>
+            </div>
+          </div>
+        </div>
+
         {/* Pricing Section */}
-        <div style={{ marginTop: '120px', marginBottom: '80px' }}>
+        <div id="pricing" style={{ marginTop: '120px', marginBottom: '80px', paddingTop: '80px' }}>
           <h2 style={{ fontSize: '48px', fontWeight: '900', color: '#111827', marginBottom: '16px', letterSpacing: '-1px' }}>Simple, Transparent Pricing</h2>
           <p style={{ fontSize: '20px', color: '#6B7280', marginBottom: '48px' }}>Choose the plan that fits your business. Save more with longer commitments!</p>
           
