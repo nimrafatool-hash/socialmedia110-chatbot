@@ -76,16 +76,23 @@ export default function Billing() {
           </p>
 
           <div style={{ backgroundColor: '#F8F9FF', padding: '20px', borderRadius: '12px', border: '1px solid #C7D2FE', marginBottom: '24px' }}>
-            <h4 style={{ fontWeight: '700', color: '#4F46E5', marginBottom: '12px' }}>🏦 Bank Transfer (UBL)</h4>
+            <h4 style={{ fontWeight: '700', color: '#4F46E5', marginBottom: '12px' }}>🏦 Local Bank Transfer (Pakistan)</h4>
             <div style={{ marginBottom: '4px' }}><strong>Bank Name:</strong> UBL (United Bank Limited)</div>
             <div style={{ marginBottom: '4px' }}><strong>Account Title:</strong> [Your Name Here]</div>
-            <div><strong>Account Number:</strong> 0000 0000 0000</div>
+            <div><strong>IBAN / Account Number:</strong> 0000 0000 0000</div>
+          </div>
+
+          <div style={{ backgroundColor: '#FFFBEB', padding: '20px', borderRadius: '12px', border: '1px solid #FDE68A', marginBottom: '24px' }}>
+            <h4 style={{ fontWeight: '700', color: '#D97706', marginBottom: '12px' }}>🌍 Payoneer (For International Clients)</h4>
+            <div style={{ marginBottom: '4px' }}><strong>Payoneer Email:</strong> [your-email@example.com]</div>
+            <div style={{ fontSize: '13px', color: '#92400E', marginTop: '8px' }}>* Perfect for clients in USA, UK, and Europe. Send payment directly to this Payoneer email.</div>
           </div>
 
           <div style={{ backgroundColor: '#F0FDF4', padding: '20px', borderRadius: '12px', border: '1px solid #BBF7D0', marginBottom: '24px' }}>
-            <h4 style={{ fontWeight: '700', color: '#16A34A', marginBottom: '12px' }}>📱 JazzCash</h4>
-            <div style={{ marginBottom: '4px' }}><strong>Account Title:</strong> [Your Name Here]</div>
-            <div><strong>Mobile Number:</strong> 0300 0000000</div>
+            <h4 style={{ fontWeight: '700', color: '#16A34A', marginBottom: '12px' }}>📱 SadaPay / JazzCash (Local Wallets)</h4>
+            <div style={{ marginBottom: '4px' }}><strong>SadaPay Number:</strong> 0300 0000000</div>
+            <div style={{ marginBottom: '4px' }}><strong>JazzCash Number:</strong> 0300 0000000</div>
+            <div><strong>Account Title:</strong> [Your Name Here]</div>
           </div>
 
           <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: '24px', textAlign: 'center' }}>
