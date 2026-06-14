@@ -58,22 +58,24 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main style={{ padding: '100px 20px 80px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+      <main style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
+
+        {/* Background Gradient Effect */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '600px', background: 'linear-gradient(180deg, #E0E7FF 0%, rgba(255,255,255,0) 100%)', zIndex: -1 }}></div>
 
         {/* Badge */}
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: '8px',
-          backgroundColor: 'var(--primary-light)',
+          backgroundColor: 'white',
           color: 'var(--primary)',
-          padding: '8px 20px',
+          padding: '8px 24px',
           borderRadius: '50px',
-          fontSize: '13px',
+          fontSize: '15px',
           fontWeight: '700',
-          marginBottom: '32px',
-          letterSpacing: '0.5px',
-          boxShadow: '0 2px 8px rgba(79,70,229,0.1)',
+          marginBottom: '24px',
+          boxShadow: '0 4px 10px rgba(79,70,229,0.1)',
         }}>
           <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--primary)', boxShadow: '0 0 0 3px rgba(79,70,229,0.2)' }}></span>
           ✨ The Future of Customer Support
@@ -81,12 +83,11 @@ export default function Home() {
 
         {/* Headline */}
         <h1 style={{
-          fontSize: '68px',
-          fontWeight: '900',
+          fontSize: '52px',
+          fontWeight: '800',
           color: 'var(--text-primary)',
-          lineHeight: '1.08',
-          marginBottom: '28px',
-          letterSpacing: '-2.5px',
+          lineHeight: '1.2',
+          marginBottom: '24px',
         }}>
           Grow Your Business <br />
           with <span style={{ background: 'linear-gradient(to right, var(--primary), var(--accent))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>AI-Powered Chatbots</span>
@@ -95,10 +96,10 @@ export default function Home() {
         <p style={{
           fontSize: '20px',
           color: 'var(--text-secondary)',
-          maxWidth: '580px',
-          margin: '0 auto 44px',
-          lineHeight: '1.7',
-          fontWeight: '400',
+          maxWidth: '600px',
+          margin: '0 auto 40px',
+          lineHeight: '1.6',
+          fontWeight: '500',
         }}>
           Turn your website visitors into paying customers. Train an AI in 2 minutes, embed it anywhere, and watch your sales grow 24/7.
         </p>
@@ -157,22 +158,22 @@ export default function Home() {
         </div>
 
         {/* Pricing Section */}
-        <div id="pricing" style={{ marginTop: '120px', marginBottom: '80px' }}>
-          <h2 style={{ fontSize: '44px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '12px', letterSpacing: '-1.5px' }}>
+        <div id="pricing" style={{ marginTop: '100px', marginBottom: '80px' }}>
+          <h2 style={{ fontSize: '36px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '12px' }}>
             Simple, Transparent Pricing
           </h2>
-          <p style={{ fontSize: '18px', color: 'var(--text-secondary)', marginBottom: '56px' }}>
+          <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '40px' }}>
             Choose the plan that fits your business. Save more with longer commitments!
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px', textAlign: 'left' }}>
             {/* Monthly */}
             <div className={styles.pricingCard}>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>Monthly</h3>
-              <div style={{ fontSize: '42px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '20px', letterSpacing: '-1px' }}>$25<span style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-muted)' }}>/mo</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2.2', fontSize: '14px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>Monthly</h3>
+              <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>$25<span style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-muted)' }}>/mo</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2', fontSize: '16px' }}>
                 <li>✅ 1 Custom AI Chatbot</li>
-                <li>✅ Unlimited Knowledge Base</li>
+                <li>✅ Unlimited Knowledge</li>
                 <li>✅ Unlimited Leads</li>
                 <li>✅ Live Chat Takeover</li>
               </ul>
@@ -180,11 +181,11 @@ export default function Home() {
             </div>
 
             {/* 3 Months - Featured */}
-            <div className={styles.pricingCard} style={{ border: '2px solid var(--primary)', boxShadow: 'var(--shadow-lg)' }}>
+            <div className={styles.pricingCard} style={{ border: '2px solid var(--primary)', boxShadow: 'var(--shadow-md)' }}>
               <div className={styles.badge} style={{ backgroundColor: 'var(--primary)' }}>10% OFF</div>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--primary)', marginBottom: '12px' }}>3 Months</h3>
-              <div style={{ fontSize: '42px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '20px', letterSpacing: '-1px' }}>$67.5<span style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2.2', fontSize: '14px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--primary)', marginBottom: '12px' }}>3 Months</h3>
+              <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>$67.5<span style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2', fontSize: '16px' }}>
                 <li>✅ Everything in Monthly</li>
                 <li>✅ Billed every 3 months</li>
                 <li>🔥 Just $22.50 / month</li>
@@ -195,9 +196,9 @@ export default function Home() {
             {/* 6 Months */}
             <div className={styles.pricingCard}>
               <div className={styles.badge} style={{ backgroundColor: 'var(--success)' }}>15% OFF</div>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>6 Months</h3>
-              <div style={{ fontSize: '42px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '20px', letterSpacing: '-1px' }}>$127.5<span style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2.2', fontSize: '14px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>6 Months</h3>
+              <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>$127.5<span style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2', fontSize: '16px' }}>
                 <li>✅ Everything in Monthly</li>
                 <li>✅ Billed every 6 months</li>
                 <li>🔥 Just $21.25 / month</li>
@@ -208,17 +209,15 @@ export default function Home() {
             {/* 12 Months */}
             <div className={styles.pricingCard}>
               <div className={styles.badge} style={{ backgroundColor: 'var(--warning)' }}>25% OFF</div>
-              <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>12 Months</h3>
-              <div style={{ fontSize: '42px', fontWeight: '900', color: 'var(--text-primary)', marginBottom: '20px', letterSpacing: '-1px' }}>$225<span style={{ fontSize: '15px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2.2', fontSize: '14px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '12px' }}>12 Months</h3>
+              <div style={{ fontSize: '36px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '20px' }}>$225<span style={{ fontSize: '18px', fontWeight: '500', color: 'var(--text-muted)' }}>/total</span></div>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px 0', color: 'var(--text-secondary)', lineHeight: '2', fontSize: '16px' }}>
                 <li>✅ Everything in Monthly</li>
                 <li>✅ Billed yearly</li>
                 <li>🔥 Just $18.75 / month</li>
               </ul>
               <Link href="/login" className={styles.primaryBtn}>Get Started</Link>
             </div>
-          </div>
-        </div>
       </main>
 
       {/* Chatbot */}
