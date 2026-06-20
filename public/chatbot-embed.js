@@ -32,7 +32,7 @@
   iframe.id = 'botflow-chatbot-iframe';
   
   // Initial styles: Small size just for the floating button
-  var closedStyle = "position: fixed; bottom: 20px; right: 20px; width: 80px; height: 80px; border: none; z-index: 2147483647; background: transparent; pointer-events: auto; transition: all 0.3s ease; color-scheme: light;";
+  var closedStyle = "position: fixed; bottom: 20px; right: 20px; width: 200px; height: 100px; border: none; z-index: 2147483647; background: transparent; pointer-events: auto; transition: all 0.3s ease; color-scheme: light;";
   var openStyle = "position: fixed; bottom: 20px; right: 20px; width: 380px; height: 600px; border: none; z-index: 2147483647; background: transparent; pointer-events: auto; transition: all 0.3s ease; color-scheme: light;";
   
   // Ensure mobile responsiveness
