@@ -85,7 +85,7 @@ export default function MyBots() {
     welcomeMessage: "${bot.welcome_message || 'Hi! How can I help you?'}"
   };
 </script>
-<script src="${siteUrl}/chatbot-embed.js" async></script>`;
+<script src="${siteUrl}/api/embed" async></script>`;
   };
 
   const copyToClipboard = (text) => {
